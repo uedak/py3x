@@ -1,0 +1,42 @@
+{%- macro csrf_token_tag() %}
+	{{- tag('input', name=req.CSRF_TOKEN_NAME, type='hidden', value=req.csrf_token) }}
+{%- endmacro %}
+
+{%- macro input_tag(name, form=req.form or req.args) %}
+	{{- tag('input', **req.Util.input_tag_attrs(form, name, kwargs)) }}
+{%- endmacro %}
+
+{%- macro checkbox_tag(name, form=req.form or req.args) %}
+	{{- tag('input', **req.Util.input_tag_attrs(form, name, kwargs, 'checkbox')) }}
+{%- endmacro %}
+
+{%- macro radio_tag(name, form=req.form or req.args) %}
+	{{- tag('input', **req.Util.input_tag_attrs(form, name, kwargs, 'radio')) }}
+{%- endmacro %}
+
+{%- macro select_tag(name, form=req.form or req.args, default=none, options={}) %}
+	{%- call tag('select', name=name, **kwargs) %}
+		{%- if default is not none %}
+<option value="">{{ default }}</option>
+		{%- endif %}
+		{%- for k, s, v in req.Util.select_tag_options(form, name, options) %}
+<option value="{{ k }}"{% if s %} selected="1"{% endif %}>{{ v }}</option>
+		{%- endfor %}
+	{%- endcall %}
+{%- endmacro %}
+
+{% macro tag(name) %}<{{ name }}{% for k, v in kwargs.items()
+	%}{% if k == 'data' %}{% for k, v in v.items() %} data-{{ k }}="{{ v }}"{% endfor
+	%}{% else %} {{ k }}="{{ v }}"{% endif %}{% endfor
+	%}{% if caller %}>{{ caller() }}</{{ name }}>{% else %} />{% endif
+%}{%- endmacro %}
+
+{%- macro textarea_tag(name, form=req.form or req.args) %}
+	{%- call tag('textarea', name=name, **kwargs) %}
+{{ form[name] }}{% endcall %}
+{%- endmacro %}
+
+{%- macro wrap_if(bool, tnm) %}
+	{%- set res = caller() %}
+	{%- if bool %}{% call tag(tnm, **kwargs) %}{{ res }}{% endcall %}{% else %}{{ res }}{% endif %}
+{%- endmacro %}
