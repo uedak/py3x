@@ -1,0 +1,2 @@
+include py3x/flask/views/_py3x.jinja2
+global-exclude *.pyc
