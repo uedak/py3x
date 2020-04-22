@@ -1,3 +1,4 @@
+from collections.abc import Hashable
 from datetime import date, datetime, timedelta, timezone
 from types import MethodType
 import json
@@ -732,7 +733,7 @@ class Util:
 
 class XEnum:
     def __contains__(self, v):
-        return v is not None and self.__getattr__('.v2x').get(v) is v
+        return v is not None and self.get(v) is v
 
     def __getattr__(self, k0):
         d = self.__dict__
@@ -784,8 +785,9 @@ class XEnum:
         k in ('__module__', '__name__') or die.ro_attr(type(self), k)
         super().__setattr__(k, v)
 
-    def get(self, *args):
-        return self.__getattr__('.v2x').get(*args)
+    def get(self, k, x=None):
+        return x if not isinstance(k, Hashable) else \
+            self.__getattr__('.v2x').get(k, x)
 
     def items(self, k='label'):
         return ((x.value, getattr(x, k)) for x in self.__getattr__('.xs'))

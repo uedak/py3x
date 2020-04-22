@@ -582,3 +582,8 @@ def test_choices():
 
     foo['flag'] = False
     assert foo.flag is False
+
+    foo = Foo()
+    foo['xyz'] = ['X']
+    assert not foo.is_valid()
+    assert foo.errors == {'xyz': [errors.BAD_FORMAT]}
