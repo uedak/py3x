@@ -163,8 +163,9 @@ class Request(flask.Request):
                 return True
             self.ABORT_ON_BAD_CSRF and abort(400)
 
-    def merged_args(self, q=None, **kw):
-        q = MultiDict(self.args if q is None else q)
+    def merged_args(self, *args, **kw):
+        len(args) < 2 or die.n_args('merged_args()', '0 or 1', 'p', len(args))
+        q = MultiDict(args[0] if args else self.args)
         for k, v in kw.items():
             if v is not None:
                 q[k] = v
