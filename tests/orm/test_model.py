@@ -473,10 +473,10 @@ def test_validate():
     assert not bar.is_valid()
     assert bar.errors == {
         'chks': [errors.INVALID],
-        'created_by': [errors.BLANK],
-        'foo_id': [errors.BLANK],
+        'created_by': [errors.UNSELECTED],
+        'foo_id': [errors.UNSELECTED],
         'rad': [errors.UNSELECTED],
-        'updated_by': [errors.BLANK]}
+        'updated_by': [errors.UNSELECTED]}
 
     bar = instantiate(Bar, id=1, lock_version=1)
     bar['lock_version'] = '2'

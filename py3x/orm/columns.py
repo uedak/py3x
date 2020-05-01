@@ -44,7 +44,8 @@ class Column:
         vs = self.validate = {**vs} if vs else {}
         vsd = vs.setdefault
         es = model.Errors
-        self.null or vsd('nn', es.UNSELECTED if self.choices else True)
+        self.null or vsd(
+            'nn', es.UNSELECTED if self.belongs_to or self.choices else True)
         self.choices and self.def_choices(model, vsd)
         self.after_def_(model, vsd)
 
