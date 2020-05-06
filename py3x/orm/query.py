@@ -159,7 +159,7 @@ class Query:
 
     @_always
     def _build_delete(self, ss, vs, wp, ts):
-        ts = ts and ', '.join(ts)
+        ts = ts and not self.kw.get('order_by') and ', '.join(ts)  # mysql 8
         ss.append('DELETE ' + ts if ts else 'DELETE')
 
     def _build_for_update(self, ss, vs, wp, x):
