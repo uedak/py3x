@@ -130,6 +130,10 @@ def test_Query():
         q._add2([], [], True, None, 1)
     assert e.value.args == (1,)
 
+    with pytest.raises(TypeError) as e:
+        Baz.as_('100')
+    assert e.value.args == ("invalid table alias: '100'",)
+
 
 def test_Query__iter_rows():
     Foo, Bar, Bar2, Baz = models()

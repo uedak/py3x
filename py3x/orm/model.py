@@ -254,7 +254,11 @@ class Model(ModelClass('ModelClass', (), {})):
 
     @classmethod
     def query(cls, as_=None):
-        return cls.Query(cls, cls.DB_TABLE_AS if as_ is None else as_)
+        if as_ is None:
+            as_ = cls.DB_TABLE_AS
+        elif as_ != '':
+            cls.Query._assert_ta(as_)
+        return cls.Query(cls, as_)
 
     @classmethod
     def where(cls, *args, **kw):

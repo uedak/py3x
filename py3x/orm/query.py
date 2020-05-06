@@ -76,6 +76,7 @@ class Query:
     BORDER = "'|'"
     RE_ORDER_BY = re.compile(
         r'\A(?:(\w+)\.)?((\w+)(?: +(?:ASC|DESC))?)\Z', re.IGNORECASE)
+    RE_TA = re.compile(r'[A-Za-z_][0-9A-Za-z_]*')
     SELECT_ = qw('from join where group_by having')
     SELECT = ('select', *SELECT_, *qw('order_by limit offset for_update'))
     UPDATE = qw('update join set where order_by limit')
@@ -85,6 +86,11 @@ class Query:
     @cached_class_property
     def BUILD_CACHE(cls):
         return {}
+
+    @classmethod
+    def _assert_ta(cls, ta):
+        if not (isinstance(ta, str) and cls.RE_TA.fullmatch(ta)):
+            raise TypeError('invalid table alias: %r' % ta)
 
     def __bool__(self):
         if getattr(self, '_cache', False) is False:
@@ -481,9 +487,11 @@ class Query:
 
         if as_ is None:
             as_ = self.next_t(m)
-        as_ or die.no_ta(m)
-        if as_ == self.as_ or as_ in t2j:
+        elif as_ == self.as_ or as_ in t2j:
             raise TypeError('not unique table alias: %r' % as_)
+        else:
+            as_ or die.no_ta(m)
+            self._assert_ta(as_)
 
         if callable(on):
             on = on(as_)
