@@ -10,7 +10,7 @@ import zlib
 class _64k:
     def __init__(self, size=65535, **kw):
         self.size = size
-        super().__init__(**kw)
+        self.__class__.__base__.__init__(self, **kw)
 
     def db_type(self):
         t, s = self.DB_TYPE, self.size
