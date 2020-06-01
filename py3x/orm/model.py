@@ -434,7 +434,8 @@ class Model(ModelClass('ModelClass', (), {})):
         if vs is None:
             return []
         s = self.Util.val2str
-        return [s(v) for v in vs] if isinstance(vs, (list, tuple)) else [s(vs)]
+        return [s(v) for v in vs] if isinstance(vs, (list, set, tuple)) else \
+            [s(vs)]
 
     def insert(self, **kw):
         txn = self.is_changed(txn={})
