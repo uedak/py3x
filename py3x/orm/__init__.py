@@ -103,6 +103,17 @@ class SQL:
     def as_(self, as_):
         return self.wrap(f'(%s) AS {as_}')
 
+    def union(self, *xs, all=False):
+        ss = []
+        vs = []
+        for x in (self, *xs):
+            isinstance(x, SQL) or die.type(x, SQL)
+            _s, _vs = x
+            ss.append(_s)
+            _vs and vs.extend(_vs)
+        j = ' UNION ALL ' if all else ' UNION '
+        return self.__class__(j.join(ss), *vs)
+
     def wrap(self, f):
         sql = object.__new__(self.__class__)
         t = self._t
