@@ -92,7 +92,8 @@ class _Z:
             return len(v).to_bytes(4, 'little') + zlib.compress(v, 6)
 
 
-class ZTEXT(TEXT):
+class ZTEXT(columns.TEXT):
+    include(_64k)
     include(_Z)
     DB_TYPE = 'BLOB'
 
