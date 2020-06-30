@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 setup(
     name='py3x',
-    version='0.1.5',
+    version='0.1.6',
     description='python3 extension',
     url='https://github.com/uedak/py3x',
     author='uedak',
