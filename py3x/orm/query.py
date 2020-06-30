@@ -358,9 +358,7 @@ class Query:
         t2j = self.kw.get('join') or ()
         if '*.*' in args:
             args = tuple(x for x in args if x != '*.*')
-            for t in (as_, *t2j):
-                if t not in kw:
-                    kw[t] = '*'
+            kw = dict((*((t, '*') for t in (as_, *t2j)), *kw.items()))
 
         n1 = len(t2xs) or 1
         xs0 = None
