@@ -1,5 +1,5 @@
-from .utils import DailyLogHandler, die, warn
-from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
+from .utils import die, warn
+from logging import INFO, WARNING, ERROR, CRITICAL
 import logging
 import os
 import signal
@@ -33,10 +33,10 @@ class Runner:
     class SigTrap(Exception):
         pass
 
-    def __init__(self, pkg, log, lck=None):
+    def __init__(self, pkg, dlh, lck=None):
         self.pkg = pkg
         self.cfg = pkg.Config if hasattr(pkg, 'Config') else self.Config
-        self.log = log
+        self.dlh = dlh
         self.lck = not self.cfg.parallel_run and lck
 
     def after_run(self):
@@ -45,12 +45,8 @@ class Runner:
     def before_run(self):
         self.lck and os.mkdir(self.lck)
 
-    def filter(self, r):
-        if r.levelno < WARNING:
-            return True
-        logging.getLogger().handle(r)
-
-    def finalize_log(self, lgr, dlh):
+    def finalize_log(self, lgr):
+        dlh = self.dlh
         lim = self.cfg.summary_limit
         lvn = INFO
         lns = []
@@ -63,7 +59,6 @@ class Runner:
         msg = self.lvn2msg(lvn)
         w0 = dlh.stream.write
         dlh.stream.write = lambda m: (lns.append(m), w0(m))
-        lgr.removeFilter(self.filter)
         lgr._log(lvn, msg, ())
         w0(dlh.terminator)
         dlh.stream.write = w0
@@ -75,21 +70,13 @@ class Runner:
             'FAILED'
 
     def run(self, args):
-        dlh = DailyLogHandler(self.log)
-        dlh.setFormatter(self.Formatter())
-        logging.getLogger().addHandler(dlh)
         try:
-            self.run_(args, dlh)
+            self.run_(args)
         except Exception as e:
             warn(e, level=CRITICAL)
-        logging.getLogger().removeHandler(dlh)
 
-    def run_(self, args, dlh):
+    def run_(self, args):
         lgr = logging.getLogger(self.pkg.__name__)
-        lgr.setLevel(DEBUG)
-        lgr.propagate = False
-        lgr.addHandler(dlh)
-        lgr.addFilter(self.filter)
         lgr.info(f'BEGIN {args}')
         self.before_run()
         try:
@@ -102,7 +89,7 @@ class Runner:
             warn(e, level=ERROR)
         finally:
             self.after_run()
-            self.finalize_log(lgr, dlh)
+            self.finalize_log(lgr)
 
     def sigtrap(self, sig):
         signal.signal(getattr(signal, sig), lambda *a: die(self.SigTrap(sig)))

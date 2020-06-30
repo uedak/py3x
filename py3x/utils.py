@@ -561,7 +561,7 @@ class Util:
         return buf.getvalue()
 
     @classmethod
-    def init_logger(cls, path, is_debug=False, more=None):
+    def init_logger(cls, path, debug=False, more=None, fmt=None, level=None):
         def emit(rec):
             msg = rec.getMessage()
             ei = rec.exc_info
@@ -589,19 +589,21 @@ class Util:
         lgr.addHandler(h)
 
         lgh = cls.LogHandler(path)
-        cls.init_logger_format(lgh)
+        lgh.setFormatter(fmt or cls.init_logger_format())
         lgr.addHandler(lgh)
 
-        is_debug and lgr.addHandler(DebugStreamHandler())
+        level is None or lgr.setLevel(level)
+        debug and lgr.addHandler(DebugStreamHandler())
+        return lgh
 
     @classmethod
-    def init_logger_format(cls, lgh):
+    def init_logger_format(cls):
         class IndentFormatter(logging.Formatter):
             def format(self, r):
                 return super().format(r).replace("\n", "\n\t") + "\n"
 
-        lgh.setFormatter(IndentFormatter(
-            "%(asctime)s\t%(levelname)s\t%(name)s\t%(message)s"))
+        return IndentFormatter(
+            "%(asctime)s\t%(levelname)s\t%(name)s\t%(message)s")
 
     @classmethod
     def is_bool_str(cls, s):
