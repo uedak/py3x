@@ -132,6 +132,7 @@ class Column:
             self.form2py = lambda v: None if v == '' else cs.get(v, v)
             if self.default is not None and not callable(self.default):
                 self.default = cs[self.default]
+            vsd('type', cs.__getattr__('.X'))
             vsd('choice', cs)
             setattr(model, name + '_choice', choice)
 
