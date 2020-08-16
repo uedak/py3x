@@ -48,6 +48,7 @@ class Column:
             'nn', es.UNSELECTED if self.belongs_to or self.choices else True)
         self.choices and self.def_choices(model, vsd)
         self.after_def_(model, vsd)
+        vsd('type', self.PY_TYPE)
 
         for k, v in vs.items():
             oa = getattr(es, 'validate_' + k).__annotations__.get('o')
@@ -131,7 +132,6 @@ class Column:
             self.form2py = lambda v: None if v == '' else cs.get(v, v)
             if self.default is not None and not callable(self.default):
                 self.default = cs[self.default]
-            vsd('type', cs.__getattr__('.X'))
             vsd('choice', cs)
             setattr(model, name + '_choice', choice)
 
@@ -172,7 +172,6 @@ class BOOL(Column):
 
     def after_def_(self, model, vsd):
         self.str2bool = model.Util.str2bool
-        vsd('type', bool)
 
     def db2py(self, v):
         return v if v is None else bool(v)
@@ -186,7 +185,6 @@ class DATE(Column):
 
     def after_def_(self, model, vsd):
         self.str2date = model.Util.str2date
-        vsd('type', Date)
 
     def form2py(self, v):
         return None if v == '' else self.str2date(v, self.strict)
@@ -197,7 +195,6 @@ class DATETIME(Column):
 
     def after_def_(self, model, vsd):
         self.str2datetime = model.Util.str2datetime
-        vsd('type', DateTime)
 
     def form2py(self, v):
         return None if v == '' else self.str2datetime(v, self.strict)
@@ -209,7 +206,6 @@ class INT(Column):
 
     def after_def_(self, model, vsd):
         self.str2int = model.Util.str2int
-        vsd('type', int)
         vsd('range', self.default_range())
 
     def default_range(self):
@@ -275,7 +271,6 @@ class BELONGS_TO(Column):
         c = b2.COLUMNS[self.b2pk]
         for k in ('PY_TYPE', 'db_type', 'form2py'):
             setattr(self, k, getattr(c, k))
-        vsd('type', self.PY_TYPE)
         if c.db2py is None:
             c.db2py = True
 

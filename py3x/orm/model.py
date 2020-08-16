@@ -163,8 +163,8 @@ class Model(ModelClass('ModelClass', (), {})):
             k = 'COLUMNS' if (*cs,)[:len(pk)] != pk else \
                 'DB_SELECT' if s[0] != '*' and s[:len(pk)] != pk else None
             k and die(TypeError(f'{cls}.{k} does not start with PRIMARY_KEY'))
-            all(die.incompo(cs[k], 'primary_key', 'db2py')
-                for k in pk if cs[k].db2py not in (None, True))
+            all(die.incompo(cs[k], 'primary_key', 'py2db')
+                for k in pk if cs[k].py2db is not None)
 
     @classmethod
     def as_(cls, as_):

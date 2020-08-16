@@ -450,7 +450,7 @@ def test_choices():
     assert foo.errors == {
         'abc': [errors.INVALID],
         'efg': [errors.INVALID],
-        'xyz': [errors.BAD_FORMAT],
+        'xyz': [errors.INVALID],
         'flag': [errors.BAD_FORMAT],
     }
 
