@@ -1,4 +1,4 @@
-from . import RecordNotFound, SQL, die
+from . import RecordNotFound, SQL, cached_attr, die
 from ..utils import _NX, cached_class_property, cached_property, repr_kw
 
 
@@ -148,7 +148,7 @@ class Model(ModelClass('ModelClass', (), {})):
         for k, v in cls.__dict__.items():
             if isinstance(v, Column):
                 attrs[k] = cs[k] = v
-            elif isinstance(v, Relation):
+            elif isinstance(v, (Relation, cached_attr)):
                 attrs[k] = v
             else:
                 continue  # pragma: no cover

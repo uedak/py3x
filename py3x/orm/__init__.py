@@ -1,5 +1,12 @@
-from ..utils import die
+from ..utils import die, cached_property
 from types import GeneratorType
+
+
+class cached_attr(cached_property):
+    form2py = None
+
+    def after_def(*args):
+        pass
 
 
 class die(die):
