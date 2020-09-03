@@ -71,6 +71,8 @@ class Runner:
 
     def run(self, args):
         try:
+            self.sigtrap('SIGINT')
+            self.sigtrap('SIGTERM')
             self.run_(args)
         except Exception as e:
             warn(e, level=CRITICAL)
@@ -78,18 +80,18 @@ class Runner:
     def run_(self, args):
         lgr = logging.getLogger(self.pkg.__name__)
         lgr.info(f'BEGIN {args}')
-        self.before_run()
         try:
-            self.sigtrap('SIGINT')
-            self.sigtrap('SIGTERM')
-            self.pkg.run(args, lgr)
-        except self.SigTrap as e:
-            lgr.warn(f'caught {e}')
+            self.before_run()
+            try:
+                self.pkg.run(args, lgr)
+            except self.SigTrap as e:
+                lgr.warn(f'caught {e}')
+            except Exception as e:
+                warn(e, level=ERROR)
+            self.after_run()
         except Exception as e:
             warn(e, level=ERROR)
-        finally:
-            self.after_run()
-            self.finalize_log(lgr)
+        self.finalize_log(lgr)
 
     def sigtrap(self, sig):
         signal.signal(getattr(signal, sig), lambda *a: die(self.SigTrap(sig)))
