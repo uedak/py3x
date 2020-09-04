@@ -561,7 +561,7 @@ class Util:
         return buf.getvalue()
 
     @classmethod
-    def init_logger(cls, path, debug=False, more=None, fmt=None, level=None):
+    def init_logger(cls, path, debug=False, more=None, fmt=None):
         def emit(rec):
             msg = rec.getMessage()
             ei = rec.exc_info
@@ -592,7 +592,6 @@ class Util:
         lgh.setFormatter(fmt or cls.init_logger_format())
         lgr.addHandler(lgh)
 
-        level is None or lgr.setLevel(level)
         debug and lgr.addHandler(DebugStreamHandler())
         return lgh
 

@@ -1,5 +1,5 @@
 from .utils import die, warn
-from logging import INFO, WARNING, ERROR, CRITICAL
+from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
 import logging
 import os
 import signal
@@ -79,6 +79,7 @@ class Runner:
 
     def run_(self, args):
         lgr = logging.getLogger(self.pkg.__name__)
+        lgr.setLevel(DEBUG)
         lgr.info(f'BEGIN {args}')
         try:
             self.before_run()

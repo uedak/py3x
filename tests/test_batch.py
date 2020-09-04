@@ -15,8 +15,7 @@ def test_run_():
 
     dir = 'py3x.test'
     os.mkdir(dir)
-    dlh = Util.init_logger(
-        dir + '/bat.log', fmt=Bat.Formatter(), level=logging.DEBUG)
+    dlh = Util.init_logger(dir + '/bat.log', fmt=Bat.Formatter())
     lck = dir + '/bat.lck'
 
     bat = Bat(pkg, dlh, lck=lck)
