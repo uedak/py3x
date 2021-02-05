@@ -57,11 +57,17 @@ class Runner:
                 lns.append("...\n" if len(lns) == lim else ln)
 
         msg = self.lvn2msg(lvn)
-        w0 = dlh.stream.write
-        dlh.stream.write = lambda m: (lns.append(m), w0(m))
+        f0 = dlh.format
+
+        def format(r):
+            ln = f0(r)
+            lns.append(ln + dlh.terminator)
+            return ln
+
+        dlh.format = format
         lgr._log(lvn, msg, ())
-        w0(dlh.terminator)
-        dlh.stream.write = w0
+        dlh.stream.write(dlh.terminator)
+        dlh.format = f0
         return lvn, msg, lns
 
     def lvn2msg(self, lvn):
